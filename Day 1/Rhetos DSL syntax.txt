@@ -1,0 +1,27 @@
+Example of nested statements (recommended):
+ 
+Module Bookstore
+{
+   Entity Book
+   {
+      ShortString Code { AutoCode; }
+      ShortString Title;
+      Integer NumberOfPages;
+
+      ItemFilter CommonMisspelling 'book => book.Title.Contains("curiousity")';
+      InvalidData CommonMisspelling 'It is not allowed to enter misspelled word "curiousity".';
+
+      Logging;
+   }
+}
+
+Example of flat statements (the code above):
+
+Module Bookstore;
+Entity Bookstore.Book;
+ShortString Bookstore.Book.Code { AutoCode; }
+ShortString Bookstore.Book.Title;
+Integer Bookstore.Book.NumberOfPages;
+ItemFilter Bookstore.Book.CommonMisspelling 'book => book.Title.Contains("curiousity")';
+InvalidData Bookstore.Book.CommonMisspelling 'It is not allowed to enter misspelled word "curiousity".';
+Logging Bookstore.Book;
