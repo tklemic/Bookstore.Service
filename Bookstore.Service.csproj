@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RhetosDeploy>True</RhetosDeploy>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Rhetos.CommonConcepts" Version="5.3.0" />
+    <PackageReference Include="Rhetos.DslParser" Version="5.3.0" />
+    <PackageReference Include="Rhetos.Host" Version="5.3.0" />
+    <PackageReference Include="Rhetos.Host.AspNet" Version="5.3.0" />
+    <PackageReference Include="Rhetos.MSBuild" Version="5.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+</Project>
