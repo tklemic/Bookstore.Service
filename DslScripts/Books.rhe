@@ -1,16 +1,28 @@
+
+//All of the concepts named in the assignment have been tested through either creating or updating data (POST and PUT)
+
 Module Bookstore
 {
     Entity Book
     {
+        //DenyUserEdit; //User gets this message: "It is not allowed to directly modify Bookstore.Book."
         ShortString Code { Unique; Required; }
-        ShortString Title { Required; }
+        ShortString Title { Required;}
         Integer NumberOfPages;
         Reference Author Bookstore.Person;
+
+        ItemFilter ContainsLockMark 'item => item.Title.Contains("curiosity")';
+        Lock ContainsLockMark 'Title contains lock mark.';
     }
 
     Entity Person
     {
         ShortString Name;
+        Date DateOfInsertion { DefaultValue 'item => DateTime.Now';} //When user wants to create a new record, Today's date is inserted successfuly by the system.'
+        Logging 
+        {
+            Log Bookstore.Person.Name; //When user does something with the name property, DB trigger activates which saves info about it in Common.Log table.
+        }
     }
 
     Entity Comment
@@ -34,12 +46,16 @@ Module Bookstore
 
         ShortString OriginalLanguage;
         Reference Translator Bookstore.Person;
+
+        Logging { AllProperties; } //Simillar to logging, but it includes all the properties in this entity.
     }
 
     Entity Topic
     {
         ShortString Name { Unique; Required; }
-
+        ShortString Code { AutoCode; } //E.G. "string+++" is saved as string001 in DB
+        DateTime DateOfCreation { CreationTime; } //System puts the timestamp of the record being created by user.
+        DateTime DateOfModified { ModificationTimeOf Bookstore.Topic.Name; } //When user changes the value of name, timestamp is inserted in this property/column.
     }
 
     Entity BookTopic
@@ -52,6 +68,7 @@ Module Bookstore
 
     Entity Employee
     {
+        Deactivatable; //Creates "Active" column with its default value being 1 (True).
         ShortString Name { Required; }
         Decimal VAT { Unique; }
     }
