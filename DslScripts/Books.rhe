@@ -101,4 +101,21 @@ Module Bookstore
 
         UniqueMultiple 'Employee Department';
     }
+
+    Browse BookGrid Bookstore.Book
+    {
+    Take Code;
+    Take Title;
+    Take 'Author.Name';
+    Take TranslatorName 'Extension_ForeignBook.Translator.Name';
+    Take NumberOfComments 'Extension_BookInfo.NumberOfComments';
+    }
+
+    SqlQueryable BookInfo <SQL\BookInfo.sql>       
+    {
+        Extends Bookstore.Book;
+        Integer NumberOfComments;
+
+        AutodetectSqlDependencies;
+    }
 }
