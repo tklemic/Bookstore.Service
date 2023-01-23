@@ -1,0 +1,18 @@
+{
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "Microsoft.AspNetCore": "Warning"
+      }
+    },
+    "ConnectionStrings": {
+     "RhetosConnectionString": "Data Source=GEMINI\\SQL2016BTIM;Initial Catalog=EdukacijaRhetos;Integrated Security=SSPI;"
+  },
+  "Rhetos": {
+    "AppSecurity": {
+      "AllClaimsForAnonymous": true
+    }
+  },
+    "AllowedHosts": "*"
+  }
+  

@@ -11,6 +11,9 @@ Module Bookstore
         Integer NumberOfPages;
         Reference Author Bookstore.Person;
 
+        ItemFilter CommonMisspelling 'book => book.Title.Contains("curiousity")';
+        InvalidData CommonMisspelling 'It is not allowed to enter misspelled word "curiousity".';
+
         ItemFilter ContainsLockMark 'item => item.Title.Contains("curiosity")';
         Lock ContainsLockMark 'Title contains lock mark.';
     }
@@ -135,10 +138,10 @@ Module Bookstore
     }
 
     Hardcoded Genre
-{
-    ShortString Label; // Short text displayed to user.
-    LongString Description;
-    Bool IsFiction;
+    {
+        ShortString Label; // Short text displayed to user.
+        LongString Description;
+        Bool IsFiction;
 
     Entry ScienceFiction
     {
@@ -153,6 +156,30 @@ Module Bookstore
         Value Description 'A written narrative of a person''s life.';
         Value IsFiction 0;
     }
-}
+    }
 
+    Action Insert5Books
+        '(parameter, repository, userInfo) =>
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                var newBook = new Bookstore.Book { Code = i + "+++", Title = "New book" };
+                repository.Bookstore.Book.Insert(newBook);
+            }
+        }';
+    
+    Action InsertManyBooks
+        '(parameter, repository, userInfo) =>
+    {
+        for (int i = 0; i < parameter.NumberOfBooks; i++)
+        {
+            string newTitle = parameter.TitlePrefix + " - " + (i + 1);
+            var newBook = new Bookstore.Book { Code = i + "++", Title = newTitle };
+            repository.Bookstore.Book.Insert(newBook);
+        }
+    }'
+{
+    Integer NumberOfBooks;
+    ShortString TitlePrefix;
+}
 }
