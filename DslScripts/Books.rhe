@@ -111,10 +111,25 @@ Module Bookstore
     Take NumberOfComments 'Extension_BookInfo.NumberOfComments';
     }
 
+    Browse BookGridTopics Bookstore.Book
+    {
+    Take Title;
+    Take 'Author.Name';
+    Take AmountOfTopics 'Extension_BookTopicTotal.AmountOfTopics';
+    }
+
     SqlQueryable BookInfo <SQL\BookInfo.sql>       
     {
         Extends Bookstore.Book;
         Integer NumberOfComments;
+
+        AutodetectSqlDependencies;
+    }
+
+    SqlQueryable BookTopicTotal <SQL\BookTopicTotal.sql> 
+    {
+        Extends Bookstore.Book;
+        Integer AmountOfTopics;
 
         AutodetectSqlDependencies;
     }
