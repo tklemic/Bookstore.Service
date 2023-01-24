@@ -182,4 +182,20 @@ Module Bookstore
     Integer NumberOfBooks;
     ShortString TitlePrefix;
 }
+    
+    //Zadatak 4. (6. u skripti)
+    Action InsertMultipleBooks
+        '(parameter, repository, userInfo) =>
+    {
+        for (int i = 0; i < parameter.NumberOfBooks; i++)
+        {
+            var newBook = new Bookstore.Book { Code = i + "++++", Title = parameter.Title };
+            repository.Bookstore.Book.Insert(newBook);
+        }
+    }'
+{
+    Integer NumberOfBooks;
+    ShortString Title;
+}
+
 }
