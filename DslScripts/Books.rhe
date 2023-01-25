@@ -1,6 +1,4 @@
-
 //All of the concepts named in the assignment have been tested through either creating or updating data (POST and PUT)
-
 Module Bookstore
 {
     Entity Book
@@ -11,11 +9,62 @@ Module Bookstore
         Integer NumberOfPages;
         Reference Author Bookstore.Person;
 
+
+        //To check the filter: https://localhost:7040/rest/Bookstore/Book/?filters=[{"Filter":"Bookstore.LongBooks"}]
+        ItemFilter LongBooks 'item => item.NumberOfPages >= 500';
+        //Another way for the ^LongBooks https://localhost:7040/rest/Bookstore/Book/?filters=[{"Filter":"Bookstore.LongBooks2"}]
+        ComposableFilterBy LongBooks2 '(query, repository, parameter) =>
+            {
+                return query.Where(item => item.NumberOfPages >= 500);
+            }' ;
+        // https://localhost:7040/rest/Bookstore/Book/?filters=[{"Filter":"Bookstore.LongBooks3","Value":"true"}]
+        ComposableFilterBy LongBooks3 '(query, repository, parameter) =>
+            {
+                var filtered = query.Where(item => item.NumberOfPages >= parameter.MinimumPages);
+                if (parameter.ForeignBooksOnly == true)
+                    filtered = filtered.Where(item => item.Extension_ForeignBook.ID != null);
+                 return filtered;
+            }';
+        //FilterBy
+        FilterBy ComplexSearch '(repository, parameter) => 
+            {
+                var query = repository.Bookstore.Book.Query(item => item.NumberOfPages >= parameter.MinimumPages);
+                if (parameter.ForeignBooksOnly == true)
+                    query = query.Where(item => item.Extension_ForeignBook.ID != null);
+                Book[] books = query.ToSimple().ToArray();
+
+                if (parameter.MaskTitles == true)
+                    foreach (var book in books.Where(b => !string.IsNullOrEmpty(b.Title)))
+                        book.Title = book.Title.First() + "***" + book.Title.Last();
+
+                return books;
+            }';
+
         ItemFilter CommonMisspelling 'book => book.Title.Contains("curiousity")';
-        InvalidData CommonMisspelling 'It is not allowed to enter misspelled word "curiousity".';
+        InvalidData CommonMisspelling 'It is not allowed to enter misspelled word "curiousity". Please use "curiosity" instead.';
 
         ItemFilter ContainsLockMark 'item => item.Title.Contains("curiosity")';
         Lock ContainsLockMark 'Title contains lock mark.';
+
+        ItemFilter ForeignAuthorXWithComments 'item =>
+            item.Author.Name.StartsWith("T")
+            && item.Extension_ForeignBook.ID != null
+            && _domRepository.Bookstore.Comment.Subquery.Where(c => c.BookID == item.ID).Count() >= 3';
+    }
+
+    Parameter LongBooks2{}
+
+    Parameter LongBooks3
+    {
+        Integer MinimumPages;
+        Bool ForeignBooksOnly;
+    }
+
+    Parameter ComplexSearch
+    {
+        Integer MinimumPages;
+        Bool ForeignBooksOnly;
+        Bool MaskTitles;
     }
 
     Entity Person
@@ -74,6 +123,39 @@ Module Bookstore
         Deactivatable; //Creates "Active" column with its default value being 1 (True).
         ShortString Name { Required; }
         Decimal VAT { Unique; }
+
+        //Day 3, ItemFilter assignment: https://localhost:7040/rest/Bookstore/Employee/?filters=[{"Filter":"Bookstore.LargerVAT"}]    
+        ItemFilter LargerVAT 'item => item.VAT >= 5';
+
+        //ComposableFilterBy https://localhost:7040/rest/Bookstore/Employee/?filters=[{"Filter":"Bookstore.LargerVAT2"}]  
+        ComposableFilterBy LargerVAT2 '(query, repository, parameter) =>
+            {
+                return query.Where(item => item.VAT >= 5);
+            }' ;
+
+        //FilterBy
+        FilterBy Search '(repository, parameter) => 
+            {
+                var query = repository.Bookstore.Employee.Query(item => item.VAT >= parameter.MinimumVAT);
+                if (parameter.Active == true)
+                    query = query.Where(item => item.Active != null);
+                Employee[] employees = query.ToSimple().ToArray();
+
+                if (parameter.MaskNames == true)
+                    foreach (var employee in employees.Where(b => !string.IsNullOrEmpty(b.Name)))
+                        employee.Name = employee.Name.First() + "***" + employee.Name.Last();
+
+                return employees;
+            }';
+    }
+
+    Parameter LargerVAT2{}
+
+    Parameter Search
+    {
+        Integer MinimumVAT;
+        Bool Active;
+        Bool MaskNames;
     }
 
     Entity Manager
