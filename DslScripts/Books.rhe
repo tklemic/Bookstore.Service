@@ -5,7 +5,7 @@ Module Bookstore
     {
         //DenyUserEdit; //User gets this message: "It is not allowed to directly modify Bookstore.Book."
         ShortString Code { Unique; Required; }
-        ShortString Title { Required;}
+        ShortString Title { Required; }
         Integer NumberOfPages;
         Reference Author Bookstore.Person;
 
@@ -39,7 +39,7 @@ Module Bookstore
 
                 return books;
             }';
-
+                
         ItemFilter CommonMisspelling 'book => book.Title.Contains("curiousity")';
         InvalidData CommonMisspelling 'It is not allowed to enter misspelled word "curiousity". Please use "curiosity" instead.';
 
@@ -50,6 +50,25 @@ Module Bookstore
             item.Author.Name.StartsWith("T")
             && item.Extension_ForeignBook.ID != null
             && _domRepository.Bookstore.Comment.Subquery.Where(c => c.BookID == item.ID).Count() >= 3';
+    }
+
+    Entity Disposal
+    {
+        Reference Book { Required; }
+        LongString Explanation { Required; }
+        DateTime EffectiveSince { CreationTime; }
+        
+        //InvalidData concept
+        ItemFilter ImportantBookExplanation 'item => item.Book.Title.Contains("important") && item.Explanation.Length < 50';
+        InvalidData ImportantBookExplanation 'When disposing an important book, the explanation should be at least 50 characters long.';
+        ItemFilter HighRating 'item => item.Book.Extension_BookRating.Rating > 100';
+        InvalidData HighRating 'You are not allowed to dispose a book with rating above 100.';  
+    }
+
+    Entity BookRating
+    {
+        Extends Bookstore.Book;
+        Decimal Rating;
     }
 
     Parameter LongBooks2{}
