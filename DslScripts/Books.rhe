@@ -236,6 +236,8 @@ Module Bookstore
         Integer AmountOfTopics;
 
         AutodetectSqlDependencies;
+
+        
     }
 
     Hardcoded Genre
@@ -279,10 +281,10 @@ Module Bookstore
             repository.Bookstore.Book.Insert(newBook);
         }
     }'
-{
+    {
     Integer NumberOfBooks;
     ShortString TitlePrefix;
-}
+    }
     
     //Zadatak 4. (6. u skripti)
     Action InsertMultipleBooks
@@ -294,9 +296,14 @@ Module Bookstore
             repository.Bookstore.Book.Insert(newBook);
         }
     }'
-{
+    {
     Integer NumberOfBooks;
     ShortString Title;
-}
+    }
 
+    //Day 3 SqlView
+    SqlView BookAuthor <SQL\BookAuthor.sql>
+    {
+        AutodetectSqlDependencies;
+    }
 }
