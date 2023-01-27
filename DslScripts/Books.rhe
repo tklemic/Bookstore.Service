@@ -74,7 +74,7 @@ Module Bookstore
                         {
                             item.Text = item.Score.Value >= 3
                                 ? "I like it" : "I don''t like it";
-                            item.LastModifiedTime = DateTime.Now; //demonstrate initialization on LastModifiedTime property
+                            item.LastModifiedTime = DateTime.Now; //demonstrated initialization on LastModifiedTime property
                         }
                 ';
             

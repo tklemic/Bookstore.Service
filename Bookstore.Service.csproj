@@ -9,8 +9,10 @@
 
   <ItemGroup>
     <PackageReference Include="ConsoleDump" Version="0.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="7.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Rhetos" Version="5.3.0" />
     <PackageReference Include="Rhetos.CommonConcepts" Version="5.3.0" />
     <PackageReference Include="Rhetos.DslParser" Version="5.3.0" />
     <PackageReference Include="Rhetos.Host" Version="5.3.0" />
