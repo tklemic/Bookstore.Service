@@ -624,5 +624,67 @@ Module RowPermissionsAssignment
     AutoInheritRowPermissions;
 }
 
+Module Demo
+{
+    Polymorphic MoneyTranscation
+    {
+        DateTime EventDate;
+        Money Amount;
+    }
+
+    Entity BorrowMoney
+    {
+        ShortString FromWhom;
+        DateTime EventDate;
+        Money Amount;
+
+        Is Demo.MoneyTranscation;
+        // The EventDate and Amount are automatically mapped.
+    }
+
+    Entity LendMoney
+    {
+        ShortString ToWhom;
+        DateTime EventDate;
+        Money Amount;
+
+        Is Demo.MoneyTranscation
+        {
+            Implements Demo.MoneyTranscation.Amount '-Amount';
+            // The Amount in the MoneyTranscation related to the LendMoney record will have a negative value.
+        }
+    }
+    
+    Polymorphic SalesItem
+    {
+        ShortString Code { Required; }
+        Integer Price;
+        ShortString Description;
+    }
+
+    Entity Book
+    {
+        ShortString Code { Required; }
+        Integer Price;
+        ShortString Title;
+        Reference Author Demo.Person;
+
+        Is Demo.SalesItem
+        {
+            Implements Demo.SalesItem.Description '(SELECT Title + '' '' + Demo.Person.Name AS Description FROM Demo.Book LEFT JOIN Demo.Person ON Demo.Book.AuthorID = Demo.Person.ID)';
+
+
+            
+        }
+    }
+    
+    Entity Person
+    {
+        ShortString Name;
+    }
+
+
+}
+
 
  
