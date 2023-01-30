@@ -547,4 +547,82 @@ Module DemoRowPermissions2
     AutodetectSqlDependencies;
 }
 }
+
+Module RowPermissionsAssignment
+{
+    Entity Employee
+    {
+        ShortString UserName;
+    }
+
+    Entity Book
+    {
+        ShortString Title;
+        Reference AssignedTo RowPermissionsAssignment.Employee;
+
+        RowPermissions
+        {
+            AllowRead EveryoneCanRead 'context =>
+                {
+                   return book => book.AssignedTo.ID != null; 
+                }';
+
+            //Or:
+            AllowRead EveryoneCanRead2 'context =>
+                {
+                   return book => true; 
+                }';
+
+            //Even better:
+            AllowRead EveryoneCanRead3 'context => book => true';
+
+            Allow OwnerCanWrite 'context =>
+                {
+                    Guid employeeId = context.Repository.RowPermissionsAssignment.Employee.Query()
+                        .Where(e => e.UserName == context.UserInfo.UserName)
+                        .Select(e => e.ID)
+                        .SingleOrDefault();
+                    return book => book.AssignedTo.ID == employeeId;
+                }';
+
+            //Or:
+            //AllowWrite OwnerCanWrite2 'context =>
+              //  {
+                //    return book => book.AssignedTo.UserName == context.UserInfo.UserName;
+                //}';
+        }
+    }
+
+    Entity Comment
+    {
+        LongString Text;
+        Reference Book { Detail; }
+
+        RowPermissions
+        {
+            AllowRead EveryoneCanRead 'context =>
+                {
+                    return comment => comment.Book.AssignedTo.ID != null;
+                }';
+
+            Allow OwnerCanWrite 'context =>
+                {
+                    Guid employeeId = context.Repository.RowPermissionsAssignment.Employee.Query()
+                        .Where(e => e.UserName == context.UserInfo.UserName)
+                        .Select(e => e.ID)
+                        .SingleOrDefault();
+
+                    return comment => comment.Book.AssignedTo.ID == employeeId;
+                }';
+
+            //Better:
+            InheritFrom RowPermissionsAssignment.Comment.Book;
+        }
+    }
+
+    //Or:
+    AutoInheritRowPermissions;
+}
+
+
  
