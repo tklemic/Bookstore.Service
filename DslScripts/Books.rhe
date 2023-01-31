@@ -626,7 +626,7 @@ Module RowPermissionsAssignment
 
 Module Demo
 {
-    Polymorphic MoneyTranscation
+    Polymorphic MoneyTransaction
     {
         DateTime EventDate;
         Money Amount;
@@ -638,8 +638,21 @@ Module Demo
         DateTime EventDate;
         Money Amount;
 
-        Is Demo.MoneyTranscation;
+        Is Demo.MoneyTransaction;
         // The EventDate and Amount are automatically mapped.
+    }
+
+    Entity BorrowMoney2
+    {
+        DateTime EventDate;
+        ShortString FromWhom;
+        Money Amount;
+        Bool Forgotten;
+
+        Is Demo.MoneyTransaction
+        {
+            Where 'Forgotten = 0'; // SQL snippet, the "Forgotten" column is a "bit".
+        }
     }
 
     Entity LendMoney
@@ -648,13 +661,65 @@ Module Demo
         DateTime EventDate;
         Money Amount;
 
-        Is Demo.MoneyTranscation
+        Is Demo.MoneyTransaction
         {
-            Implements Demo.MoneyTranscation.Amount '-Amount';
+            Implements Demo.MoneyTransaction.Amount '-Amount';
             // The Amount in the MoneyTranscation related to the LendMoney record will have a negative value.
         }
     }
-    
+
+    Entity TransferMoney
+    {
+        DateTime EventDate;
+        ShortString TransferFrom;
+        ShortString TransferTo;
+        Money Amount;
+
+        Is Demo.MoneyTransaction; // Implicitly using the 'Amount' value.
+
+        Is Demo.MoneyTransaction 'Subtract'
+        {
+        Implements Demo.MoneyTransaction.Amount '-Amount';
+        }
+    }
+
+    Entity LendMoneyAddendum
+    {
+        Reference LendMoney;
+        Money AdditionalAmount;
+    }
+
+    Entity LendMoney // Adding new features to the existing entity.
+    {
+        Is Demo.MoneyTransaction 'TotalAddendum'
+        {
+            Implements Demo.MoneyTransaction.Amount '(SELECT -SUM(AdditionalAmount) FROM Demo.LendMoneyAddendum)';
+            SqlDependsOn Demo.LendMoneyAddendum;
+        }
+    }
+
+    Entity TransactionComment
+    {
+        Reference MoneyTransaction;
+        LongString Comment;
+    }
+
+    Entity LendMoney2
+    {
+        ShortString ToWhom;
+        // When using SqlImplementation, the properties are not automatically inherited from the polymorphic.
+        DateTime EventDate;
+        Money Amount;
+
+        Is Demo.MoneyTransaction
+        {
+            SqlImplementation "SELECT lm.ID, lm.EventDate, Amount = -lm.Amount FROM Demo.LendMoney2 lm"
+            {
+                AutoDetectSqlDependencies;
+            }
+        }
+    }
+
     Polymorphic SalesItem
     {
         ShortString Code { Required; }
@@ -671,10 +736,8 @@ Module Demo
 
         Is Demo.SalesItem
         {
-            Implements Demo.SalesItem.Description '(SELECT Title + '' '' + Demo.Person.Name AS Description FROM Demo.Book LEFT JOIN Demo.Person ON Demo.Book.AuthorID = Demo.Person.ID)';
-
-
-            
+            Implements Demo.SalesItem.Description '(SELECT Title + '' '' + Demo.Person.Name AS Description FROM Demo.Book LEFT JOIN Demo.Person ON Demo.Book.AuthorID = Demo.Person.ID)'; 
+            Where 'Price != 0';
         }
     }
     
