@@ -261,7 +261,6 @@ Module Bookstore
         Bool MaskNames;
     }
    
-
     Entity Manager
     {
         Extends Bookstore.Employee;
@@ -293,26 +292,35 @@ Module Bookstore
 
     Browse BookGrid Bookstore.Book
     {
-    Take Code;
-    Take Title;
-    Take 'Author.Name';
-    Take TranslatorName 'Extension_ForeignBook.Translator.Name';
-    Take NumberOfComments 'Extension_BookInfo.NumberOfComments';
+        Take Code;
+        Take Title;
+        Take 'Author.Name';
+        Take TranslatorName 'Extension_ForeignBook.Translator.Name';
+        Take NumberOfComments 'Extension_BookInfo.NumberOfComments';
     }
 
     Browse BookGridTopics Bookstore.Book
     {
-    Take Title;
-    Take 'Author.Name';
-    Take AmountOfTopics 'Extension_BookTopicTotal.AmountOfTopics';
+        Take Title;
+        Take 'Author.Name';
+        Take AmountOfTopics 'Extension_BookTopicTotal.AmountOfTopics';
     }
 
-    SqlQueryable BookInfo <SQL\BookInfo.sql>       
+    SqlQueryable ComputeBookInfo <SQL\BookInfo.sql>       
     {
         Extends Bookstore.Book;
         Integer NumberOfComments;
 
-        AutodetectSqlDependencies;
+        ChangesOnLinkedItems Bookstore.Comment.Book;
+    }
+
+    Entity BookInfo
+    {
+        ComputedFrom Bookstore.ComputeBookInfo
+        {
+            AllProperties;
+            KeepSynchronized;
+        }
     }
 
     SqlQueryable BookTopicTotal <SQL\BookTopicTotal.sql> 
@@ -321,8 +329,6 @@ Module Bookstore
         Integer AmountOfTopics;
 
         AutodetectSqlDependencies;
-
-        
     }
 
     Hardcoded Genre
@@ -495,9 +501,14 @@ Module Bookstore
             KeepSynchronized;
             AllProperties;
         }
-    }
+    }   
+
+    // ComputeBookInfo computes some information about the book by using SQL query.
+    // The result is persisted (as a cache) in Entity BookInfo, and updated automatically.
+
     
 }
+
 Module DemoRowPermissions1
 {
     Entity Division
@@ -852,6 +863,7 @@ Module Demo
     }
 
 }
+
 
 
  
