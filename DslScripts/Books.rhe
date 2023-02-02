@@ -306,6 +306,8 @@ Module Bookstore
         Take AmountOfTopics 'Extension_BookTopicTotal.AmountOfTopics';
     }
 
+    // ComputeBookInfo computes some information about the book by using SQL query.
+    // The result is persisted (as a cache) in Entity BookInfo, and updated automatically.      
     SqlQueryable ComputeBookInfo <SQL\BookInfo.sql>       
     {
         Extends Bookstore.Book;
@@ -322,7 +324,7 @@ Module Bookstore
             KeepSynchronized;
         }
     }
-
+    
     SqlQueryable BookTopicTotal <SQL\BookTopicTotal.sql> 
     {
         Extends Bookstore.Book;
@@ -503,10 +505,7 @@ Module Bookstore
         }
     }   
 
-    // ComputeBookInfo computes some information about the book by using SQL query.
-    // The result is persisted (as a cache) in Entity BookInfo, and updated automatically.
-
-    
+      
 }
 
 Module DemoRowPermissions1
@@ -862,6 +861,10 @@ Module Demo
         ShortString Name;
     }
 
+    Entity Proba2
+    {
+        ShortString Opis;
+    }
 }
 
 
