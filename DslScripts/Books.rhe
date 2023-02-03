@@ -20,9 +20,11 @@ Module Bookstore
         // https://localhost:7040/rest/Bookstore/Book/?filters=[{"Filter":"Bookstore.LongBooks3","Value":"true"}]
         ComposableFilterBy LongBooks3 '(query, repository, parameter) =>
             {
+                var filt = "";
                 var filtered = query.Where(item => item.NumberOfPages >= parameter.MinimumPages);
                 if (parameter.ForeignBooksOnly == true)
                     filtered = filtered.Where(item => item.Extension_ForeignBook.ID != null);
+                    filt = filtered.ToString();
                  return filtered;
             }';
         //FilterBy
