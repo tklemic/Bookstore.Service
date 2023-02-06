@@ -1,6 +1,7 @@
 //All of the concepts named in the assignment have been tested through either creating or updating data (POST and PUT)
 Module Bookstore
 {
+    AutodetectSqlDependencies;
     Entity Book
     {
         //DenyUserEdit; //User gets this message: "It is not allowed to directly modify Bookstore.Book."
@@ -316,6 +317,8 @@ Module Bookstore
         Integer NumberOfComments;
 
         ChangesOnLinkedItems Bookstore.Comment.Book;
+        
+
     }
 
     Entity BookInfo
@@ -332,7 +335,7 @@ Module Bookstore
         Extends Bookstore.Book;
         Integer AmountOfTopics;
 
-        AutodetectSqlDependencies;
+        
     }
 
     Hardcoded Genre
@@ -399,7 +402,7 @@ Module Bookstore
     //Day 3 SqlView
     SqlView BookAuthor <SQL\BookAuthor.sql>
     {
-        AutodetectSqlDependencies;
+        SqlDependsOn Bookstore.Person;
     }
 
     Entity Shipment
@@ -494,8 +497,6 @@ Module Bookstore
         ChangesOnLinkedItems Bookstore.ApproveShipment.Shipment;
         ChangesOnLinkedItems Bookstore.DeliveryStarted.Shipment;
         ChangesOnLinkedItems Bookstore.DeliveryFinished.Shipment;
-
-        AutodetectSqlDependencies;
     }
 
     Entity ShipmentCurrentState
@@ -512,6 +513,8 @@ Module Bookstore
 
 Module DemoRowPermissions1
 {
+    AutodetectSqlDependencies;
+
     Entity Division
     {
         ShortString Name;
@@ -544,6 +547,8 @@ Module DemoRowPermissions1
 
 Module DemoRowPermissions2
 {
+    AutodetectSqlDependencies;
+
     AutoInheritRowPermissions;
 
     Entity Region
@@ -659,12 +664,13 @@ Module DemoRowPermissions2
 
     RowPermissions { InheritFromBase; }
 
-    AutodetectSqlDependencies;
 }
 }
 
 Module RowPermissionsAssignment
 {
+    AutodetectSqlDependencies;
+
     Entity Employee
     {
         ShortString UserName;
@@ -743,6 +749,7 @@ Module RowPermissionsAssignment
 
 Module Demo
 {
+    AutodetectSqlDependencies;
     Polymorphic MoneyTransaction
     {
         DateTime EventDate;
@@ -832,7 +839,6 @@ Module Demo
         {
             SqlImplementation "SELECT lm.ID, lm.EventDate, Amount = -lm.Amount FROM Demo.LendMoney2 lm"
             {
-                AutoDetectSqlDependencies;
             }
         }
     }
@@ -855,6 +861,7 @@ Module Demo
         {
             Implements Demo.SalesItem.Description '(SELECT Title + '' '' + Demo.Person.Name AS Description FROM Demo.Book LEFT JOIN Demo.Person ON Demo.Book.AuthorID = Demo.Person.ID)'; 
             Where 'Price != 0';
+            SqlDependsOn Demo.Person;
         }
     }
     
