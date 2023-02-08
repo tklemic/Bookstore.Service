@@ -316,9 +316,7 @@ Module Bookstore
         Extends Bookstore.Book;
         Integer NumberOfComments;
 
-        ChangesOnLinkedItems Bookstore.Comment.Book;
-        
-
+        ChangesOnLinkedItems Bookstore.Comment.Book;  
     }
 
     Entity BookInfo
@@ -384,6 +382,12 @@ Module Bookstore
     ShortString TitlePrefix;
     }
     
+    Action InsertRandomBook
+        '(parameter, repository, userInfo) => Bookstore.Service.RandomBookGenerator.InsertBooks(repository, parameter.NumberOfBooks)'
+    {
+        Integer NumberOfBooks;
+    }
+
     //Zadatak 4. (6. u skripti)
     Action InsertMultipleBooks
         '(parameter, repository, userInfo) =>
@@ -584,8 +588,8 @@ Module DemoRowPermissions2
         {
             Allow WithinDivision 'context =>
                 {
-                    Guid myDivisionId = context.Repository.DemoRowPermissions2.Employee.Query()
-                        .Where(e => e.UserName == context.UserInfo.UserName)
+                    Guid myDivisionId = context.Repository.DemoRowPermissions2.Employee
+                        .Query(e => e.UserName == context.UserInfo.UserName)
                         .Select(e => e.Division.ID)
                         .SingleOrDefault();
                     return item => item.Division.ID == myDivisionId;
@@ -605,10 +609,10 @@ Module DemoRowPermissions2
                     return item => myRegionIds.Contains(item.Division.Region.ID);
                 }';
 
-            DenyWrite PreviousYears 'context =>
-                {
-                    return item => item.Created < new DateTime(DateTime.Today.Year, 1, 1);
-                }';
+            //DenyWrite PreviousYears 'context =>
+              //  {
+                //    return item => item.Created < new DateTime(DateTime.Today.Year, 1, 1);
+               // }';
         }
     }
 
